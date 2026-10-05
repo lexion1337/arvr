@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AR Solar System</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; font-family: system-ui, sans-serif; }
+    #hint {
+      position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%); z-index: 10;
+      background: rgba(10, 20, 45, 0.8); color: #fff;
+      padding: 10px 16px; border-radius: 20px; font-size: 14px;
+      text-align: center; max-width: 90vw; transition: opacity .3s;
+    }
+    #hint.found { opacity: 0; }
+  </style>
+</head>
+<body>
+  <div id="hint">Point your camera at the Hiro marker</div>
+
+  <a-scene embedded
+           vr-mode-ui="enabled: false"
+           renderer="logarithmicDepthBuffer: true; antialias: true"
+           arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;">
+
+    <a-marker preset="hiro" id="marker">
+      <a-light type="ambient" intensity="0.5"></a-light>
+      <a-light type="point" position="0 0.5 0" intensity="1.2" color="#FFE7A0"></a-light>
+
+      <a-entity position="0 0.6 0">
+        <!-- Sun -->
+        <a-sphere radius="0.35" color="#FDB813"
+                  material="emissive: #FDB813; emissiveIntensity: 0.7"
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 12000; easing: linear"></a-sphere>
+
+        <!-- Earth orbit path -->
+        <a-ring rotation="-90 0 0" radius-inner="0.99" radius-outer="1.01"
+                color="#FFFFFF" material="opacity: 0.35; transparent: true; side: double"></a-ring>
+
+        <!-- Earth + Moon -->
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+          <a-entity position="1 0 0">
+            <a-sphere radius="0.14" color="#2E86DE"></a-sphere>
+            <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 2000; easing: linear">
+              <a-sphere position="0.28 0 0" radius="0.05" color="#CFCFCF"></a-sphere>
+            </a-entity>
+          </a-entity>
+        </a-entity>
+
+        <!-- Mars -->
+        <a-ring rotation="-90 0 0" radius-inner="1.49" radius-outer="1.51"
+                color="#FFFFFF" material="opacity: 0.25; transparent: true; side: double"></a-ring>
+        <a-entity animation="property: rotation; to: 0 -360 0; loop: true; dur: 14000; easing: linear">
+          <a-sphere position="-1.5 0 0" radius="0.1" color="#C1440E"></a-sphere>
+        </a-entity>
+      </a-entity>
+
+      <a-text value="AR Solar System" align="center" color="#FFFFFF"
+              position="0 1.5 0" rotation="-30 0 0" scale="1.6 1.6 1.6"></a-text>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    const marker = document.getElementById('marker');
+    const hint = document.getElementById('hint');
+    marker.addEventListener('markerFound', () => hint.classList.add('found'));
+    marker.addEventListener('markerLost', () => hint.classList.remove('found'));
+  </script>
+</body>
+</html>
